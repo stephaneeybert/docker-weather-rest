@@ -1,0 +1,26 @@
+version: "3.7"
+services:
+  weather-rest:
+    image: localhost:5000/weather-rest
+    ports:
+      - "8080:8080"
+    networks:
+      - weather-rest
+    volumes:
+      - "~/dev/docker/projects/weather-rest/volumes/code/weather-rest-0.0.1-SNAPSHOT.jar:/tmp/weather-rest/weather-rest.jar"
+      - "~/dev/docker/projects/weather-rest/volumes/logs:/usr/local/weather-rest/logs"
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: any
+        delay: 5s
+        max_attempts: 3 
+        window: 10s
+    healthcheck:
+      test: curl --fail --insecure http://localhost:8080/api/ || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 3  
+networks:
+  weather-rest:  
+    name: weather-rest
